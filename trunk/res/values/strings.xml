@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, GoGetter!</string>
+    <string name="app_name">GoGetter</string>
+<string name="og">chat à  souris blanche, chat à  souris grise, souris blanche à  fromage gauche, souris grise à  fromage droite</string>
+
+	<string name="oa">souris blanche à fromage gauche</string>
+	<string name="ob">chat à  souris blanche et souris grise</string>
+	<string name="oc">chien gauche et chien droite à  chat</string>
+	<string name="od">chien gauche à  niche bleue, chien droite à  niche rouge</string>
+	<string name="oe">chien gauche à  chat, chat à  souris grise, souris grise à  fromage droite </string>
+	<string name="of">chien gauche à  niche bleue, chat à  souris blanche, chien gauche pas à  chat</string>
+	<string name="oh">chien droit à  chat, souris grise à  souris blanche mais pas chien droit à  souris grise ni chat à  souris blanche</string>
+	<string name="oi">souris blanche et souris grise à  os petit, os grand, fromage gauche, fromage droite</string>
+	<string name="oj">chien droite à  niche rouge, os petit, os grand, chat, arbre</string>
+    <string name="Valider">Valider</string>
+
+
+
+
+</resources>
