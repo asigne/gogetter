@@ -12,7 +12,16 @@ public class Objectif {
 	public void ajouterCouple(Couple newCouple){
 		listeCouple.add(newCouple);
 	}
+
+	public ArrayList<Couple> getListeCouple() {
+		return listeCouple;
+	}
+
+	public void setListeCouple(ArrayList<Couple> listeCouple) {
+		this.listeCouple = listeCouple;
+	}
 	
 
+	
 	
 }

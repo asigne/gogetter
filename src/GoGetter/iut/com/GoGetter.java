@@ -1,5 +1,7 @@
 package GoGetter.iut.com;
 
+
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -117,17 +119,18 @@ public class GoGetter extends Activity {
 				{
 					caseCourante.setUtilise(true);
 					monPlateau.setCase(caseCourante, ligne, colonne);
-					//textObjectif.setText("azert"+caseCourante.getLigneOri()+caseCourante.getColonneOri());
+					textObjectif.setText(""+caseCourante);
 					//maPartie.setCasesRestantes(caseCourante.getLigneOri(), caseCourante.getColonneOri(), null);
 				}	
 			}
 		}
 		else
 		{
-			Case caseARetirer=monPlateau.getCase(ligne, colonne);
+			textObjectif.setText(""+monPlateau.getCase(ligne, colonne));
+		/*	Case caseARetirer=monPlateau.getCase(ligne, colonne);
 			monPlateau.setCase(null, ligne, colonne);
 			caseARetirer.setUtilise(false);
-			maPartie.setCasesRestantes(caseARetirer.getLigneOri(), caseARetirer.getColonneOri(), caseARetirer);
+			maPartie.setCasesRestantes(caseARetirer.getLigneOri(), caseARetirer.getColonneOri(), caseARetirer);*/
 		}
 		affichePlateau(0);
 		afficheListeCases(0);
@@ -292,26 +295,68 @@ public class GoGetter extends Activity {
 	}
 	
 	public void valider(){
+		Objectif objectifCourant=maPartie.getObjectifCourant();
+		Plateau monPlateau=maPartie.getMonPlateau();
+		boolean plateauRempli = true, condition=true;
+		Point origine=null,objectif=null;
+		for(int i=0;i<objectifCourant.getListeCouple().size();i++)
+		{
+			Couple coupleATraiter=objectifCourant.getListeCouple().get(i);
+			origine=coupleATraiter.getOrigine();
+			objectif=coupleATraiter.getObjectif();		
 		
+			plateauRempli=true;
+			for (ligne = 0; ligne < 5; ligne++) {
+				for (colonne = 0; colonne < 5; colonne++) {
+					if(monPlateau.getCase(ligne, colonne)==null)
+					{
+						plateauRempli=false;
+					}
+				}
+			}
+			
+			if(plateauRempli)
+			{
+				//fonction(origine.getLigne(),origine.getColonne(),monPlateau);
+				fonction(4,1,monPlateau);
+			}
+			else
+			{
+				textObjectif.setText("tout le plateau doit etre rempli avan de valider");
+			}
+			
+			if(monPlateau.getCase(0, 3).getFlag()==0)
+			{
+				condition=false;
+				textObjectif.setText(""+monPlateau.getCase(4, 1)+"  "+monPlateau.getCase(0, 3));
+			}
+		}
+		
+		if(condition==true)
+		{
+			textObjectif.setText("Gagne");
+		}
 	}
 	
 	
 
-	public void fonction(int ligne, int colonne, Plateau monPlateau) {
+	public static void fonction(int ligne, int colonne, Plateau monPlateau) {
+		//System.out.println("debut fonction");
 		Case maCase = monPlateau.getCase(ligne, colonne); // recupere la case à
 		// traiter
 		int L1 = 0, C1 = 0, S = 0, E=0;
 		boolean Ok;
-
-		//monPlateau.getCase(ligne, colonne).setFlag(1); // met a 1 le flag de la
+		System.out.println("debut fonction nouvelle ligne:"+ligne+" colonne:"+colonne+" "+maCase);
+		
+		
+		monPlateau.getCase(ligne, colonne).setFlag(1); // met a 1 le flag de la
 		// case en cours de
 		// traitement
-		
 		for (int i = maCase.getSortie() + 1; i < 5; i++) // test de toutes les
 			// sorties (haut 1,
 			// droite 2, bas 3,
 			// gauche 4)
-		{					
+		{
 			Ok = false;
 			if(maCase instanceof Pont){
 				if(maCase.getEntree()==1)
@@ -330,47 +375,102 @@ public class GoGetter extends Activity {
 				{
 					i=2;
 				}
+				else if(maCase.getEntree()==0)
+				{
+					i=5;
+				}
+				System.out.println("newi"+i);
+				maCase.setEntree(0);
 			}
 			
 			if(maCase instanceof Ldouble){
-				if(maCase.getEntree()==1)
-				{
-					i=2;
-				}	
-				else if(maCase.getEntree()==2)
-				{
-					i=3;
-				}	
-				else if(maCase.getEntree()==3)
-				{
-					i=4;
+				if (maCase.getRotation()==0 || maCase.getRotation()==180){
+					if(maCase.getEntree()==1)
+					{
+						i=2;
+					}	
+					else if(maCase.getEntree()==2)
+					{
+						i=1;
+					}	
+					else if(maCase.getEntree()==3)
+					{
+						i=4;
+					}
+					else if(maCase.getEntree()==4)
+					{
+						i=3;
+					}
+					else if(maCase.getEntree()==0)
+					{
+						i=5;
+					}
+					maCase.setEntree(0);
 				}
-				else if(maCase.getEntree()==4)
+				else
 				{
-					i=4;
+					if(maCase.getEntree()==1)
+					{
+						i=4;
+					}	
+					else if(maCase.getEntree()==2)
+					{
+						i=3;
+					}	
+					else if(maCase.getEntree()==3)
+					{
+						i=2;
+					}
+					else if(maCase.getEntree()==4)
+					{
+						i=1;
+					}
+					else if(maCase.getEntree()==0)
+					{
+						i=5;
+					}
+					maCase.setEntree(0);
 				}
-			}
 			
+			}
+			int sortieInterdite=0;
+			if(maCase.getEntree()==1){
+				sortieInterdite=3;
+			}
+			else if(maCase.getEntree()==2){
+				sortieInterdite=2;
+			}
+			else if(maCase.getEntree()==3){
+				sortieInterdite=1;
+			}
+			else if(maCase.getEntree()==4){
+				sortieInterdite=2;
+			}
+			else{
+				sortieInterdite=100;
+			}
+			//System.out.println(sortieInterdite);
 			switch (i) {
 			case 1: // haut
-					if (ligne > 0
-							&& maCase.getTabDroit(1) == true
-							&& monPlateau.getCase(ligne - 1, colonne)
-							.getTabDroit(3) == true
-							&& monPlateau.getCase(ligne - 1, colonne).getFlag() == 0) {
-						L1 = -1;
-						C1 = 0;
-						S = 1;
-						E = 3;
-						Ok = true;
-					}
-					break;
+				System.out.println("haut");
+				if (ligne > 0
+						&& maCase.getTabDroit(1) == true
+						&& monPlateau.getCase(ligne - 1, colonne)
+						.getTabDroit(3) == true
+						&& monPlateau.getCase(ligne - 1, colonne).getSortie()!=sortieInterdite) {
+					L1 = -1;
+					C1 = 0;
+					S = 1;
+					E = 3;
+					Ok = true;
+				}
+				break;
 			case 2: // droite
-				if (colonne < 6
+				System.out.println("droite");
+				if (colonne < 4
 						&& maCase.getTabDroit(2) == true
-						&& monPlateau.getCase(ligne, colonne + 1)
-						.getTabDroit(4) == true
-						&& monPlateau.getCase(ligne, colonne + 1).getFlag() == 0) {
+						&& monPlateau.getCase(ligne, colonne + 1).getTabDroit(4) == true
+						&& monPlateau.getCase(ligne, colonne + 1).getSortie()!=sortieInterdite) {
 					L1 = 0;
 					C1 = 1;
 					S = 2;
@@ -379,11 +479,12 @@ public class GoGetter extends Activity {
 				}
 				break;
 			case 3: // bas
-				if (ligne < 6
+				System.out.println("bas");
+				if (ligne < 4
 						&& maCase.getTabDroit(3) == true
 						&& monPlateau.getCase(ligne + 1, colonne)
 						.getTabDroit(1) == true
-						&& monPlateau.getCase(ligne + 1, colonne).getFlag() == 0) {
+						&& monPlateau.getCase(ligne + 1, colonne).getSortie()!=sortieInterdite) {
 					L1 = 1;
 					C1 = 0;
 					S = 3;
@@ -392,31 +493,36 @@ public class GoGetter extends Activity {
 				}
 				break;
 			case 4: // gauche
+				System.out.println("gauche");
 				if (colonne > 0
 						&& maCase.getTabDroit(4) == true
 						&& monPlateau.getCase(ligne, colonne - 1)
 						.getTabDroit(2) == true
-						&& monPlateau.getCase(ligne, colonne - 1).getFlag() == 0) {
+						&& monPlateau.getCase(ligne, colonne - 1).getSortie()!=sortieInterdite) {
 					L1 = 0;
 					C1 = -1;
 					S = 4;
-					E = 2 ;
+					E = 2;
 					Ok = true;
 				}
 				break;
-			default:
 			}
 			if (Ok == true) // s'il est possible de sortir de la case en cours
 				// de traitement
 			{
-				monPlateau.getCase(ligne, colonne).setEntree(E);
+				System.out.println("ok rentré");
 				monPlateau.getCase(ligne, colonne).setSortie(S); // on indique
 				// par ou on
 				// sort
 				// on change de case
+				
+				//System.out.println("ancienne ligne:"+ligne+" colonne:"+colonne+" "+maCase);
+				//monPlateau.affiche();
+				
 				ligne = ligne + L1;
 				colonne = colonne + C1;
-
+				monPlateau.getCase(ligne, colonne).setEntree(E);
+				
 				fonction(ligne, colonne, monPlateau); // on applique la fonction
 				// sur la nouvelle case
 				// on revient à la case
@@ -428,6 +534,7 @@ public class GoGetter extends Activity {
 		// se termine sur
 		// une case on met
 		// la sortie à 0
+		System.out.println("fin fonction"+ligne+colonne);
 	}
     
 	public void setFullscreen() {
