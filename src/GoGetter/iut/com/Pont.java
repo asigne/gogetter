@@ -2,6 +2,8 @@ package GoGetter.iut.com;
 
 
 public class Pont extends Case {
+	private static final long serialVersionUID = 1L;
+
 	public Pont(int rotation) {
 		super(4);
 		this.tabDroit[1] = true;
@@ -12,7 +14,6 @@ public class Pont extends Case {
 		rotate(rotation);
 	}
 
-	@Override
 	public String toString() {
 		return "pont " + super.toString();
 	}

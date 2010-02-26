@@ -2,7 +2,6 @@ package GoGetter.iut.com;
 
 import java.util.ArrayList;
 
-import android.widget.ImageView;
 
 
 public class Partie {
@@ -46,13 +45,46 @@ public class Partie {
 		Objectif o6=new Objectif();
 		o6.ajouterCouple(new Couple(new Point(2,4), new Point(2,0)));
 		o6.ajouterCouple(new Couple(new Point(0,2), new Point(4,1)));
-		o6.ajouterCouple(new Couple(new Point(2,4), new Point(0,2))); // le contraire de ca !
+		o6.ajouterCouple(new Couple(new Point(2,4), new Point(0,2), false));
 		
-		/*# chat Ã  souris blanche, chat Ã  souris grise, souris blanche Ã  fromage gauche, souris grise Ã  fromage droite
-		# chien droit Ã  chat, souris grise Ã  souris blanche mais pas chien droit Ã  souris grise ni chat Ã  souris blanche
-		# souris blanche et souris grise Ã  os petit, os grand, fromage gauche, fromage droite
-		# chien droite Ã  niche rouge, os petit, os grand, chat, arbre
+		//# chat Ã  souris blanche, chat Ã  souris grise, souris blanche Ã  fromage gauche, souris grise Ã  fromage droite
+		Objectif o7=new Objectif();
+		o7.ajouterCouple(new Couple(new Point(0,2), new Point(4,1)));
+		o7.ajouterCouple(new Couple(new Point(0,2), new Point(1,0)));
+		o7.ajouterCouple(new Couple(new Point(4,1), new Point(3,4)));
+		o7.ajouterCouple(new Couple(new Point(1,0), new Point(0,3)));
+
+		//chien droit Ã  chat, souris grise Ã  souris blanche mais pas chien droit Ã  souris grise ni chat Ã  souris blanche
+		Objectif o8=new Objectif();
+		o8.ajouterCouple(new Couple(new Point(4,2), new Point(0,2)));
+		o8.ajouterCouple(new Couple(new Point(1,0), new Point(4,1)));
+		o8.ajouterCouple(new Couple(new Point(1,0), new Point(4,2),false));
+		o8.ajouterCouple(new Couple(new Point(0,2), new Point(4,1),false));
+		
+		
+		//# souris blanche et souris grise Ã  os petit, os grand, fromage gauche, fromage droite
+		Objectif o9=new Objectif();
+		o9.ajouterCouple(new Couple(new Point(4,1), new Point(0,1)));
+		o9.ajouterCouple(new Couple(new Point(1,0), new Point(0,1)));
+		o9.ajouterCouple(new Couple(new Point(4,1), new Point(4,3)));
+		o9.ajouterCouple(new Couple(new Point(1,0), new Point(4,3)));
+		o9.ajouterCouple(new Couple(new Point(4,1), new Point(0,3)));
+		o9.ajouterCouple(new Couple(new Point(1,0), new Point(0,3)));
+		o9.ajouterCouple(new Couple(new Point(4,1), new Point(3,4)));
+		o9.ajouterCouple(new Couple(new Point(1,0), new Point(3,4)));
+		
+		//# chien droite Ã  niche rouge, os petit, os grand, chat, arbre
+		Objectif o10=new Objectif();
+		o10.ajouterCouple(new Couple(new Point(4,2), new Point(1,4)));
+	/*!	o10.ajouterCouple(new Couple(new Point(4,2), new Point(0,1)));
+		o10.ajouterCouple(new Couple(new Point(4,2), new Point(4,3)));
+		o10.ajouterCouple(new Couple(new Point(4,2), new Point(0,2)));
+		o10.ajouterCouple(new Couple(new Point(4,2), new Point(3,0)));
 		*/
+		
+		
+
+		
 		
 		listeObjectif.add(o1);
 		listeObjectif.add(o2);
@@ -60,8 +92,22 @@ public class Partie {
 		listeObjectif.add(o4);
 		listeObjectif.add(o5);
 		listeObjectif.add(o6);		
+		listeObjectif.add(o7);	
+		listeObjectif.add(o8);	
+		listeObjectif.add(o9);	
+		listeObjectif.add(o10);	
 	}
 
+	public boolean objectifSvt(){
+		if(getListeObjectif().indexOf(getObjectifCourant())+1<listeObjectif.size())
+		{
+			int ancienObj=getListeObjectif().indexOf(getObjectifCourant());
+			objectifCourant=getListeObjectif().get(ancienObj+1);
+			return true;
+		}
+		return false;
+	}
+	
 	public Case getCaseCourante() {
 		return caseCourante;
 	}
@@ -82,6 +128,8 @@ public class Partie {
 	}
 
 	public void init(){
+		monPlateau=new Plateau();
+		
 		Case plus=new plus(0);
 		Case L1=new L(0);
 		Case L2=new L(0);
@@ -103,7 +151,7 @@ public class Partie {
 		casesRestantes[0][4]=T2;
 		T2.setOri(0, 4);
 		casesRestantes[1][0]=plus;
-		plus.setOri(0, 0);
+		plus.setOri(1, 0);
 		casesRestantes[1][1]=pont;
 		pont.setOri(1, 1);
 		casesRestantes[1][2]=Ldouble1;
@@ -111,17 +159,7 @@ public class Partie {
 		casesRestantes[1][3]=Ldouble2;
 		Ldouble2.setOri(1, 3);
 		casesRestantes[1][4]=null;
-		
-
-		
-		for (int ligne=0;ligne<3;ligne++)
-		{
-			for (int colonne=0;colonne<3;colonne++)
-			{
-				monPlateau.setCase(null, ligne, colonne);
-			}
-		}
-			
+	
 		
 	}
 

@@ -97,6 +97,14 @@ public class Plateau implements Serializable, Cloneable {
 			PlateauCase[3][2] = new Ldouble(90);//Ldouble
 			PlateauCase[3][3] = new T(180);
 			
+			for (int ligne=1;ligne<4;ligne++)
+			{
+				for (int colonne=1;colonne<4;colonne++)
+				{
+					setCase(null, ligne, colonne);
+				}
+			}
+			
 		}
 	}
 
@@ -106,12 +114,14 @@ public class Plateau implements Serializable, Cloneable {
 	}
 
 	
-	public void affiche() {
+	public String affiche() {
+		String etatPlateau="";
 		for (ligne = 0; ligne < 5; ligne++) {
 			for (colonne = 0; colonne < 5; colonne++) {
-				System.out.print(PlateauCase[ligne][colonne] + "   \t");
+				etatPlateau=etatPlateau+PlateauCase[ligne][colonne] + "   \t";
 			}
-			System.out.print("\n");
+			etatPlateau=etatPlateau+"\n";
 		}
+		return etatPlateau;
 	}
 }
