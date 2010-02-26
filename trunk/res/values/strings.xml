@@ -3,16 +3,16 @@
     <string name="hello">Hello World, GoGetter!</string>
     <string name="app_name">GoGetter</string>
 
-	<string name="oa">souris blanche à fromage gauche</string>
-	<string name="ob">chat à  souris blanche et souris grise</string>
-	<string name="oc">chien gauche et chien droite à  chat</string>
-	<string name="od">chien gauche à  niche bleue, chien droite à  niche rouge</string>
-	<string name="oe">chien gauche à  chat, chat à  souris grise, souris grise à  fromage droite </string>
-	<string name="of">chien gauche à  niche bleue, chat à  souris blanche, chien gauche pas à  chat</string>
-	<string name="og">chat à  souris blanche, chat à  souris grise, souris blanche à  fromage gauche, souris grise à  fromage droite</string>
-	<string name="oh">chien droit à  chat, souris grise à  souris blanche mais pas chien droit à  souris grise ni chat à  souris blanche</string>
-	<string name="oi">souris blanche et souris grise à  os petit, os grand, fromage gauche, fromage droite</string>
-	<string name="oj">chien droite à  niche rouge, os petit, os grand, chat, arbre</string>
+	<string name="oa">O1 souris blanche à fromage gauche</string>
+	<string name="ob">O2 chat à  souris blanche et souris grise</string>
+	<string name="oc">O3 chien gauche et chien droite à  chat</string>
+	<string name="od">O4 chien gauche à  niche bleue, chien droite à  niche rouge</string>
+	<string name="oe">O5 chien gauche à  chat, chat à  souris grise, souris grise à  fromage droite </string>
+	<string name="of">O6 chien gauche à  niche bleue, chat à  souris blanche, chien gauche pas à  chat</string>
+	<string name="og">O7 chat à  souris blanche, chat à  souris grise, souris blanche à  fromage gauche, souris grise à  fromage droite</string>
+	<string name="oh">O8 chien droit à  chat, souris grise à  souris blanche mais pas chien droit à  souris grise ni chat à  souris blanche</string>
+	<string name="oi">O9 souris blanche et souris grise à  os petit, os grand, fromage gauche, fromage droite</string>
+	<string name="oj">O10 chien droite à  niche rouge, os petit, os grand, chat, arbre</string>
     <string name="Valider">Valider</string>
 
 
