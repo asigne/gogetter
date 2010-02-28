@@ -17,13 +17,13 @@ public class Partie {
 		casesRestantes=new Case[2][5];
 		objectifCourant=new Objectif();
 		creationObjectifs();
-		objectifCourant=listeObjectif.get(0);
+		objectifCourant=listeObjectif.get(7);
 		monPlateau=new Plateau();
 	}
 	
 	public void creationObjectifs(){
 		Objectif o1=new Objectif();
-		o1.ajouterCouple(new Couple(new Point(4,1), new Point(0,3)));
+		o1.ajouterCouple(new Couple(new Point(4,1), new Point(3,4)));
 		
 		Objectif o2=new Objectif();
 		o2.ajouterCouple(new Couple(new Point(0,2), new Point(1,0)));
@@ -31,7 +31,7 @@ public class Partie {
 		
 		Objectif o3=new Objectif();
 		o3.ajouterCouple(new Couple(new Point(4,2), new Point(0,2)));
-		o3.ajouterCouple(new Couple(new Point(3,4), new Point(0,2)));	
+		o3.ajouterCouple(new Couple(new Point(2,4), new Point(0,2)));	
 		
 		Objectif o4=new Objectif();
 		o4.ajouterCouple(new Couple(new Point(2,4), new Point(2,0)));
@@ -76,11 +76,11 @@ public class Partie {
 		//# chien droite Ã  niche rouge, os petit, os grand, chat, arbre
 		Objectif o10=new Objectif();
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(1,4)));
-	/*!	o10.ajouterCouple(new Couple(new Point(4,2), new Point(0,1)));
+		o10.ajouterCouple(new Couple(new Point(4,2), new Point(0,1)));
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(4,3)));
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(0,2)));
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(3,0)));
-		*/
+		
 		
 		
 

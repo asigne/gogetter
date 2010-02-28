@@ -40,12 +40,18 @@ public class GoGetter extends Activity {
 	public void nouvellePartie() {
 		// creation de l'intent
 		Intent defineIntent = new Intent(this, Jeu.class);
+		Bundle objetbundle = new Bundle();
+		objetbundle.putString("typePartie", "nouvellePartie");
+		defineIntent.putExtras(objetbundle);
 		startActivity(defineIntent);
 	}
 
 	public void chargerPartie() {
 		// creation de l'intent
 		Intent defineIntent = new Intent(this, Jeu.class);
+		Bundle objetbundle = new Bundle();
+		objetbundle.putString("typePartie", "sauvPartie");
+		defineIntent.putExtras(objetbundle);
 		startActivity(defineIntent);
 	}
 

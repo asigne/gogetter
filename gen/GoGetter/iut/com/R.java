@@ -36,6 +36,7 @@ public final class R {
     public static final class id {
         public static final int AbsoluteLayout01=0x7f050000;
         public static final int CaseCourante=0x7f050024;
+        public static final int CheckBox01=0x7f050033;
         public static final int Plateau=0x7f050004;
         public static final int TableLayout01=0x7f050001;
         public static final int Valider=0x7f050031;
@@ -89,6 +90,7 @@ public final class R {
     public static final class layout {
         public static final int accueil=0x7f030000;
         public static final int main=0x7f030001;
+        public static final int parametre=0x7f030002;
     }
     public static final class string {
         public static final int Valider=0x7f04000c;
