@@ -1,8 +1,16 @@
 package GoGetter.iut.com;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -32,10 +40,20 @@ public class Jeu extends Activity {
 		textObjectif = (TextView) findViewById(R.id.textObjectif);
 		btnValider = (Button) findViewById(R.id.Valider);    
 		
+		Bundle objetParametre = this.getIntent().getExtras();
+		String typePartie =objetParametre.getString("typePartie");;
+		
 		maPartie=new Partie();
 		maPartie.init();
+		if(typePartie.equals("sauvPartie"))
+		{
+			maPartie=chargerPartie();
+		}
 		afficheListeCases(0);
 		MAJobjectif();
+		
+
+		
 		
 		btnValider.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -45,6 +63,39 @@ public class Jeu extends Activity {
 		
     }
     
+	public void onStop() {
+		Log.i("","destroy");
+		sauvegarderPartie();
+		super.onStop();
+	}
+    
+	public void sauvegarderPartie(){
+		try{
+			FileOutputStream fos=this.openFileOutput("sauv.txt", Context.MODE_WORLD_READABLE|Context.MODE_WORLD_WRITEABLE);
+			ObjectOutputStream oos=new ObjectOutputStream(fos);
+			oos.writeObject(maPartie);
+			oos.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	}
+	
+	public Partie chargerPartie(){
+		Partie partie=null;
+		try{
+			FileInputStream fis=this.openFileInput("sauv.txt");
+			ObjectInputStream ois=new ObjectInputStream(fis);
+			partie = (Partie) ois.readObject();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return partie;
+	}
+	
  // methode permettant de gérer les clic sur l'écran
 	public boolean onTouchEvent(MotionEvent event) {
 		//Configuration c = getResources().getConfiguration();
@@ -400,6 +451,11 @@ public class Jeu extends Activity {
 		plateauRempli = true;
 		condition=true;
 			
+		if(!testCheminCorrect())
+		{
+			notif("Veuillez faire des chemins correts");
+			return;
+		}
 		
 		for(int i=0;i<objectifCourant.getListeCouple().size();i++)
 		{
@@ -448,6 +504,58 @@ public class Jeu extends Activity {
 			{
 				notif("Votre configuration ne permet pas de valider l'objectif");
 			}
+	}
+	
+	public boolean testCheminCorrect(){
+		Plateau monPlateau=maPartie.getMonPlateau();
+		Case caseEnTest=null;
+		boolean condition=true;
+		for (ligne = 1; ligne < 4; ligne++) {
+			for (colonne = 1; colonne < 4; colonne++) {
+				caseEnTest=maPartie.getMonPlateau().getCase(ligne, colonne);
+				if(caseEnTest!=null)
+				{
+					for(int i=1; i<=4;i++)
+					{
+						if(caseEnTest.getTabDroit(i))
+						{
+							switch (i){
+								case 1:
+									if(!(monPlateau.getCase(ligne - 1, colonne).getTabDroit(3)))
+									{
+										condition=false;
+									}
+									break;
+								case 2:
+									if(!(monPlateau.getCase(ligne, colonne + 1).getTabDroit(4)))
+									{
+										condition=false;
+									}
+									break;
+								case 3:
+									if(!(monPlateau.getCase(ligne + 1, colonne).getTabDroit(1)))
+									{
+										condition=false;
+									}
+									break;
+								case 4:
+									if(!(monPlateau.getCase(ligne , colonne -1 ).getTabDroit(2)))
+									{
+										condition=false;
+									}
+									break;
+							}
+									
+						}
+					}
+				}
+			}
+		}
+		if (!condition)
+		{
+			return false;
+		}
+		return true;
 	}
 	
 	public void fonction(int ligne, int colonne, Plateau monPlateau) {
@@ -543,7 +651,7 @@ public class Jeu extends Activity {
 			}
 			int sortieInterdite=0;
 			if(maCase.getEntree()==1){
-				sortieInterdite=3;
+				sortieInterdite=3; //sortie de la case de laquelle on vient
 			}
 			else if(maCase.getEntree()==2){
 				sortieInterdite=4;
@@ -638,7 +746,7 @@ public class Jeu extends Activity {
 				colonne = colonne - C1;
 			}
 		}
-		//monPlateau.getCase(ligne, colonne).setSortie(0); // lorsque la fonction
+		monPlateau.getCase(ligne, colonne).setSortie(0); // lorsque la fonction
 		// se termine sur
 		// une case on met
 		// la sortie à 0

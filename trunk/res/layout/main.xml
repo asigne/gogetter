@@ -279,7 +279,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 	
 	android:minLines="2"
 	android:maxLines="2"
-	android:textSize="5.5pt"
+	android:textSize="4.7pt"
 	android:gravity="center_horizontal">
 </TextView>
 
