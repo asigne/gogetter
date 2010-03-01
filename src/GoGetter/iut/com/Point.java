@@ -1,6 +1,9 @@
 package GoGetter.iut.com;
 
-public class Point {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Point implements Serializable {
 	int ligne;
 	int colonne;
 		

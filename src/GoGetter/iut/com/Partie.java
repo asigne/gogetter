@@ -1,23 +1,25 @@
 package GoGetter.iut.com;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-
-
-public class Partie {
+@SuppressWarnings("serial")
+public class Partie implements Serializable{
 	ArrayList<Objectif> listeObjectif;
 	Case caseCourante;
 	Case[][] casesRestantes;
 	Objectif objectifCourant;
 	Plateau monPlateau;
+	String difficulte;
 	
-	public Partie(){
+	public Partie(String difficulte){
+		this.difficulte=difficulte;
 		listeObjectif=new ArrayList<Objectif>();	
 		caseCourante=null;
 		casesRestantes=new Case[2][5];
 		objectifCourant=new Objectif();
 		creationObjectifs();
-		objectifCourant=listeObjectif.get(7);
+		objectifCourant=listeObjectif.get(0);
 		monPlateau=new Plateau();
 	}
 	
@@ -80,12 +82,7 @@ public class Partie {
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(4,3)));
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(0,2)));
 		o10.ajouterCouple(new Couple(new Point(4,2), new Point(3,0)));
-		
-		
-		
-
-		
-		
+				
 		listeObjectif.add(o1);
 		listeObjectif.add(o2);
 		listeObjectif.add(o3);
@@ -115,16 +112,18 @@ public class Partie {
 	public void setCaseCourante(Case caseCourante) {
 		this.caseCourante = caseCourante;
 	}
-
 	
 	public Case getCaseDispo(int ligne, int colonne)
 	{
 		return casesRestantes[ligne][colonne];
 	}
 	
-	
 	public void setCasesRestantes(int ligne, int colonne, Case maCase) {
 		casesRestantes[ligne][colonne] = maCase;
+	}
+	
+	public String getDifficulte() {
+		return difficulte;
 	}
 
 	public void init(){
@@ -158,9 +157,7 @@ public class Partie {
 		Ldouble1.setOri(1, 2);
 		casesRestantes[1][3]=Ldouble2;
 		Ldouble2.setOri(1, 3);
-		casesRestantes[1][4]=null;
-	
-		
+		casesRestantes[1][4]=null;		
 	}
 
 	public Objectif getObjectifCourant() {

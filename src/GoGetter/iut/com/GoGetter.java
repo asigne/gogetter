@@ -10,7 +10,7 @@ import android.widget.Button;
 
 public class GoGetter extends Activity {
 
-	Button nouvellePartie, chargerPartie;
+	Button nouvellePartieAdulte, nouvellePartieEnfant, chargerPartie, quitterPartie;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -18,14 +18,20 @@ public class GoGetter extends Activity {
 		setFullscreen();
 		setContentView(R.layout.accueil);
 
-		nouvellePartie = (Button) findViewById(R.id.nouvellePartie);
+		nouvellePartieAdulte = (Button) findViewById(R.id.nouvellePartieAdulte);
+		nouvellePartieEnfant = (Button) findViewById(R.id.nouvellePartieEnfant);
 		chargerPartie = (Button) findViewById(R.id.chargerPartie);
-		// rejMulti = (Button) findViewById(R.id.rejMulti);
+		quitterPartie = (Button) findViewById(R.id.quitterPartie);
 
-		nouvellePartie.setOnClickListener(new View.OnClickListener() {
+		nouvellePartieAdulte.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				nouvellePartie();
-
+				nouvellePartieAdulte();
+			}
+		});
+		
+		nouvellePartieEnfant.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				nouvellePartieEnfant();
 			}
 		});
 
@@ -35,13 +41,30 @@ public class GoGetter extends Activity {
 
 			}
 		});
+		
+		quitterPartie.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	}
 
-	public void nouvellePartie() {
+	public void nouvellePartieAdulte() {
 		// creation de l'intent
 		Intent defineIntent = new Intent(this, Jeu.class);
 		Bundle objetbundle = new Bundle();
 		objetbundle.putString("typePartie", "nouvellePartie");
+		objetbundle.putString("difficulte", "adulte");
+		defineIntent.putExtras(objetbundle);
+		startActivity(defineIntent);
+	}
+	
+	public void nouvellePartieEnfant() {
+		// creation de l'intent
+		Intent defineIntent = new Intent(this, Jeu.class);
+		Bundle objetbundle = new Bundle();
+		objetbundle.putString("typePartie", "nouvellePartie");
+		objetbundle.putString("difficulte", "enfant");
 		defineIntent.putExtras(objetbundle);
 		startActivity(defineIntent);
 	}

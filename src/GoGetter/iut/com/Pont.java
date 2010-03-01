@@ -1,11 +1,11 @@
 package GoGetter.iut.com;
 
 
+@SuppressWarnings("serial")
 public class Pont extends Case {
-	private static final long serialVersionUID = 1L;
 
 	public Pont(int rotation) {
-		super(4);
+		super();
 		this.tabDroit[1] = true;
 		this.tabDroit[2] = true;
 		this.tabDroit[3] = true;
