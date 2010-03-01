@@ -6,7 +6,6 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Case implements Serializable, Cloneable {
 	boolean utilise;
-	int numImage;
 	int rotation; // indice de rotation par rapport � la position originale
 	boolean tabDroit[]; // tableau contenant les possibilit� de sortie de la
 	// case
@@ -23,9 +22,8 @@ public class Case implements Serializable, Cloneable {
 	int ligneOri;
 	int colonneOri;
 
-	public Case(int numImage) {
+	public Case() {
 		utilise=false;
-		this.numImage=numImage;
 		tabDroit = new boolean[5];
 		rotation = 0;
 
@@ -106,14 +104,6 @@ public class Case implements Serializable, Cloneable {
 
 	public int getRotation() {
 		return this.rotation;
-	}
-
-	public int getNumImage() {
-		return numImage;
-	}
-
-	public void setNumImage(int numImage) {
-		this.numImage = numImage;
 	}
 
 	public boolean isUtilise() {

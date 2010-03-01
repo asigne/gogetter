@@ -1,8 +1,9 @@
 package GoGetter.iut.com;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-
-public class Objectif {
+@SuppressWarnings("serial")
+public class Objectif implements Serializable {
 	ArrayList<Couple> listeCouple;
 
 

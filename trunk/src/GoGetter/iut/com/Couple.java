@@ -1,6 +1,9 @@
 package GoGetter.iut.com;
 
-public class Couple {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Couple implements Serializable {
 	Point origine;
 	Point objectif;
 	Boolean aRealiser;

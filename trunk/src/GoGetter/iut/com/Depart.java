@@ -5,7 +5,7 @@ package GoGetter.iut.com;
 @SuppressWarnings("serial")
 public class Depart extends Case {
 	public Depart(int rotation) {
-		super(6);
+		super();
 		this.tabDroit[1] = false;
 		this.tabDroit[2] = false;
 		this.tabDroit[3] = true;

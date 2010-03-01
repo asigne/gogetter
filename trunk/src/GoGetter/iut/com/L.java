@@ -5,7 +5,7 @@ package GoGetter.iut.com;
 @SuppressWarnings("serial")
 public class L extends Case {
 	public L(int rotation) {
-		super(2);
+		super();
 		this.tabDroit[1] = true;
 		this.tabDroit[2] = true;
 		this.tabDroit[3] = false;

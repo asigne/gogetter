@@ -1,16 +1,14 @@
 package GoGetter.iut.com;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -22,15 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Jeu extends Activity {
-	String etatPlateau;
 	TextView textObjectif;
 	Button btnValider;
-	int ligne, colonne;
 	int xmin=40, xmax=288, ymin=40, ymax=288;
 	RotateAnimation rotation0, rotation90, rotation180, rotation270;
 	Partie maPartie;
-	int indicePremiereCaseDispo=0x7f050027;
-	int indicePremiereCaseTableau=0x7f050006;
+	int indicePremiereCaseDispo=R.id.bl11;
+	int indicePremiereCaseTableau=R.id.l0_c0;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,19 +37,20 @@ public class Jeu extends Activity {
 		btnValider = (Button) findViewById(R.id.Valider);    
 		
 		Bundle objetParametre = this.getIntent().getExtras();
-		String typePartie =objetParametre.getString("typePartie");;
+		String typePartie =objetParametre.getString("typePartie");
+		String difficulte =objetParametre.getString("difficulte");
 		
-		maPartie=new Partie();
+		maPartie=new Partie(difficulte);
 		maPartie.init();
 		if(typePartie.equals("sauvPartie"))
 		{
-			maPartie=chargerPartie();
+			Context lecontext = getBaseContext();
+			maPartie = chargerPartie(lecontext);
+			affichePlateau();
 		}
+		
 		afficheListeCases(0);
 		MAJobjectif();
-		
-
-		
 		
 		btnValider.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -63,55 +60,72 @@ public class Jeu extends Activity {
 		
     }
     
-	public void onStop() {
-		Log.i("","destroy");
-		sauvegarderPartie();
-		super.onStop();
-	}
-    
-	public void sauvegarderPartie(){
-		try{
-			FileOutputStream fos=this.openFileOutput("sauv.txt", Context.MODE_WORLD_READABLE|Context.MODE_WORLD_WRITEABLE);
-			ObjectOutputStream oos=new ObjectOutputStream(fos);
-			oos.writeObject(maPartie);
-			oos.close();
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-	}
+    public void onStop() {
+    	Context lecontext = getBaseContext();
+    	sauvegarderPartie(lecontext, maPartie);
+    	super.onStop();
+    }
 	
-	public Partie chargerPartie(){
-		Partie partie=null;
-		try{
-			FileInputStream fis=this.openFileInput("sauv.txt");
-			ObjectInputStream ois=new ObjectInputStream(fis);
-			partie = (Partie) ois.readObject();
+    //methode pour charger la partie
+	public Partie chargerPartie(Context context) {
+
+		ObjectInputStream deserialise = null;
+		Partie partie = null;
+		try {
+			deserialise = new ObjectInputStream(context.openFileInput("sauvMaPartie"));
+			partie = (Partie) deserialise.readObject();
 		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
+
+		catch (NotSerializableException e) {
+		} catch (IOException e) {
+		} catch (ClassNotFoundException e) {
+		} finally {
+			try {
+				deserialise.close();
+			}
+			catch (IOException e) {
+			}
 		}
 		return partie;
 	}
 	
- // methode permettant de gérer les clic sur l'écran
+	//methode pour sauvegarder la partie
+	public void sauvegarderPartie(Context context, Partie data) {
+		FileOutputStream fOut = null;
+		ObjectOutputStream oos = null;
+		try {
+			fOut = context.openFileOutput("sauvMaPartie", MODE_WORLD_WRITEABLE);
+			oos = new ObjectOutputStream(fOut);
+			oos.writeObject(maPartie);
+			oos.flush();
+		} catch (IOException e) {
+		} finally {
+			try {
+				oos.close();
+				fOut.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+	
+	// methode permettant de gérer les clics sur l'écran
 	public boolean onTouchEvent(MotionEvent event) {
-		//Configuration c = getResources().getConfiguration();
+		int ligne, colonne;
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				int x = (int) (event.getX());
 				int y = (int) (event.getY());
-				//convertion du clique sur l'ecran
+				//convertion du clic sur l'ecran
 					if (x > xmin && x <= xmax && y > ymin && y < ymax) {				
-						// action sur une case du plateau
+						// action sur une case du plateau 
+						//convertion en ligne, colonne
 						ligne=(int) (y-30)/86;
 						colonne=(int) (x-30)/86;
-						actionPlateau(ligne+1,colonne+1);
+							actionPlateau(ligne+1,colonne+1);
 						return true;
 					}
 					if (x > 0 && x <= 235 && y > 318 && y < 413) {				
 						// action sur une case de la liste
+						//convertion en ligne, colonne
 						if(y > 318 && y < 365)
 						{
 							ligne=0;
@@ -124,7 +138,6 @@ public class Jeu extends Activity {
 						if(ligne!=1 || colonne!=4){
 							selectionnerCase(ligne, colonne);
 						}
-						
 						return true;
 					}
 					if (x > 240 && x <= 320 && y > 325 && y < 405) {				
@@ -136,73 +149,77 @@ public class Jeu extends Activity {
 			return false;
 	}
 	
+	//methode lors d'un clic sur les cases restantes
 	public void selectionnerCase(int ligne, int colonne) {
 		maPartie.setCaseCourante(maPartie.getCaseDispo(ligne, colonne));
 		afficheCaseCourante(0);
 	}
-
+	
+	//methode lors d'un clic sur la case courante
 	public void actionCaseCourante() {
 		if(maPartie.getCaseCourante()!=null)
 		{
 			maPartie.getCaseCourante().rotate(90); // rotation de la carte
-			afficheCaseCourante(150); // affichage de la carte
-			afficheCaseListe(maPartie.getCaseCourante());
+			afficheCaseCourante(150); // affichage de la case dans son nouvel état de rotation
+			afficheCaseListe(maPartie.getCaseCourante());	//pour supprimer l'affichage de la case dans la liste des cases restantes;
 		}
 	}
 	
+	//methode lors d'un clic sur le plateau
 	public void actionPlateau(int ligne, int colonne){
 		Plateau monPlateau=maPartie.getMonPlateau();
 		Case caseListe=null;
-		
 			if(monPlateau.getCase(ligne, colonne)==null) //si il y a aucune case a cet endroit
 			{
 				if(maPartie.getCaseCourante()!=null)
 				{
-					Case caseCourante=maPartie.getCaseCourante();
+					Case caseCourante=maPartie.getCaseCourante();	//recuperation de la case courante de la partie
 					if(!caseCourante.utilise)
 					{
-						caseCourante.setUtilise(true);
-						monPlateau.setCase(caseCourante, ligne, colonne);
-						maPartie.setCaseCourante(null);
+						caseCourante.setUtilise(true);				//la case est donc utilisée
+						monPlateau.setCase(caseCourante, ligne, colonne);	//ajout de la case dans le plateau
+						maPartie.setCaseCourante(null);			//supression de la case dans la case courante de la partie
 					}	
-					caseListe=maPartie.getMonPlateau().getCase(ligne, colonne);
+					caseListe=maPartie.getMonPlateau().getCase(ligne, colonne);	//recuperation de la case qui vient d'etre placée
 					
 				}
 			}
-			else 
+			else //s'il y a une case sur la plateau
 			{
-				Case caseARetirer=monPlateau.getCase(ligne, colonne);
-				monPlateau.setCase(null, ligne, colonne);
-				caseARetirer.setUtilise(false);
-				maPartie.setCasesRestantes(caseARetirer.getLigneOri(), caseARetirer.getColonneOri(), caseARetirer);
-				caseListe=caseARetirer;
+				Case caseARetirer=monPlateau.getCase(ligne, colonne);	//recuperation de la case du tableau a enlever
+				monPlateau.setCase(null, ligne, colonne);	//suppression de la case du tableau
+				caseARetirer.setUtilise(false);			//la case n'est plus utilisée
+				maPartie.setCasesRestantes(caseARetirer.getLigneOri(), caseARetirer.getColonneOri(), caseARetirer);	//ajout de la case aux cases restantes
+				caseListe=caseARetirer;	//recuperation de la case retirée
 			}
-			afficheCasePlateau(maPartie.getMonPlateau().getCase(ligne, colonne), ligne, colonne);
-			//affichePlateau(0);
+			afficheCasePlateau(ligne, colonne);	//mise a jour de l'affichage du plateau
 			if(caseListe!=null)
 			{
-				afficheCaseListe(caseListe);
+				afficheCaseListe(caseListe);	//mise a jour de l'affichage des cartes restantes
 			}
-			afficheCaseCourante(0);
+			afficheCaseCourante(0);	//mise a jour de l'affichage de la case courante
 		}
 	
+	//methode pour mettre a jour l'affichage de l'objectif
 	public void MAJobjectif() {
-		int numPremierObjectif=0x7f040002;
-		int numObjectif=maPartie.getListeObjectif().indexOf(maPartie.getObjectifCourant());
-		textObjectif.setText(numPremierObjectif+numObjectif);
+		int numPremierObjectif=R.string.oa;	//id de l'objectif 1
+		int numObjectif=maPartie.getListeObjectif().indexOf(maPartie.getObjectifCourant()); //recuperation de la position de l'objectif courant dans la liste des obj
+		textObjectif.setText(numPremierObjectif+numObjectif); //mise a jour de l'affichage de l'objectif courant
 	}
 		
-	public void afficheCasePlateau(Case caseATraiter, int ligneCase, int colonneCase){
-		int indice=indicePremiereCaseTableau;
+	//methode pour mettre a jour l'affichage d'une case du plateau
+	public void afficheCasePlateau(int ligneCase, int colonneCase){
+		int indice=indicePremiereCaseTableau; //id de la premiere case du plateau
 		ImageView ICT=null;
+		Case caseATraiter = maPartie.getMonPlateau().getCase(ligneCase, colonneCase);	//recuperation de la case a traiter
 		for (int ligne=1;ligne<4;ligne++)
 		{
 			for (int colonne=1;colonne<4;colonne++)
 			{
-				ICT = (ImageView) findViewById(indice);
+				ICT = (ImageView) findViewById(indice);	//recuperation de l'ImageView de la case a traiter
 				if(ligne==ligneCase && colonne==colonneCase)
 					{
-						afficheICT(caseATraiter, ICT, 0, 80);
+						afficheICT(caseATraiter, ICT, 0, 80);		//mise a jour de l'affichage
 					}
 				indice++;
 			}
@@ -211,99 +228,88 @@ public class Jeu extends Activity {
 		
 	}
 	
-	public void affichePlateau(int duration){
-		Case caseATraiter=null;
-		int indice=indicePremiereCaseTableau;
-		ImageView ICT=null;
+	//methode pour mettre a jour l'affichage du plateau
+	public void affichePlateau(){
 		for (int ligne=1;ligne<4;ligne++)
 		{
 			for (int colonne=1;colonne<4;colonne++)
 			{
-				caseATraiter = maPartie.getMonPlateau().getCase(ligne, colonne);
-				ICT = (ImageView) findViewById(indice);
-				afficheICT(caseATraiter, ICT, 0, 80);
-				indice++;
+				afficheCasePlateau(ligne, colonne);	//pour chaque case, on met a jour l'affichage de celle-ci
 			}
-			indice++;
 		}
 	}
 	
+	//methode pour mettre a jour l'affichage d'une case restante
 	public void afficheCaseListe(Case maCase)
 	{
 		int indice=indicePremiereCaseDispo;
 		ImageView ICT=null;
 		int ligneOri=maCase.getLigneOri();
 		int colonneOri=maCase.getColonneOri();
-		for (int i=0;i<2;i++)
+		for (int i=0;i<2;i++)	//parcours des lignes
 		{
+			//traitement obligatoire car 5cases sur la ligne1 et 4cases sur la ligne2
 			int max;
 			if(i==0)
 				max=5;
 			else
 				max=4;
-			for (int j=0;j<max;j++)
+			for (int j=0;j<max;j++) //parcours des colonnes
 			{
-				ICT = (ImageView) findViewById(indice);
+				ICT = (ImageView) findViewById(indice);	//recuperation de l'ImageView de la case a traiter
 				if(i==ligneOri && j==colonneOri)
 					{
-						afficheICTCaseListe(maCase, ICT, 0, 48);
+						afficheICTCaseListe(maCase, ICT, 0, 48);	//mise a jour de l'affichage
 					}
 				indice++;
 			}
 		indice++;
 		}
 	}
-
+	
+	//methode pour mettre a jour l'affichage des cases restantes
 	public void afficheListeCases(int duration) {
-		Case caseATraiter=null;
-		int indice=indicePremiereCaseDispo;
-		for (int i=0;i<2;i++)
+		Case caseATraiter;
+		for (int i=0;i<2;i++)	//parcours des lignes
 		{
+			//traitement obligatoire car 5cases sur la ligne1 et 4cases sur la ligne2
 			int max;
 			if(i==0)
 				max=5;
 			else
 				max=4;
-			for (int j=0;j<max;j++)
+			for (int j=0;j<max;j++) //parcours des colonnes
 			{
-					caseATraiter = maPartie.getCaseDispo(i, j);
-					if(caseATraiter.isUtilise())
-					{
-						caseATraiter=null;
-					}
-					ImageView ICT = (ImageView) findViewById(indice);
-					afficheICTCaseListe(caseATraiter, ICT, duration, 48);
-					indice++;
+					caseATraiter = maPartie.getCaseDispo(i, j);	//recuperation de la case a traiter
+					afficheCaseListe(caseATraiter);	//mise a jour de l'affichage de cette case
 			}
-			indice++;
 		}
 	}
 
+	//methode pour mettre a jour l'affichage de la case courante
 	public void afficheCaseCourante(int duration) {
-		// recuperation de la case a traiter
-		Case caseATraiter = maPartie.getCaseCourante();
-		// recuperation de l'ImageView a traiter
-		ImageView ICT = (ImageView) findViewById(R.id.CaseCourante);
-		if(caseATraiter!=null)
+		Case caseATraiter = maPartie.getCaseCourante();			// recuperation de la case a traiter
+		ImageView ICT = (ImageView) findViewById(R.id.CaseCourante); // recuperation de l'ImageView a traiter
+		if(caseATraiter!=null)	
 		{
 			if(caseATraiter.isUtilise())
 			{
 				caseATraiter=null;
 			}
 		}
-		afficheICT(caseATraiter, ICT, duration, 70);
+		afficheICT(caseATraiter, ICT, duration, 70);	//mise a jour de l'affichage de la case courante
 	}
 	
-	public void afficheICT(Case caseATraiter, ImageView imageCourante,
-		int duration, int dimensionCase) {
+	//methode pour afficher les images avec android
+	
+	public void afficheICT(Case caseATraiter, ImageView imageCourante, int duration, int dimensionCase) {
 		
 		if(caseATraiter!=null)
 		{
-			int noImage = 0; // numero de l'image � affecter � la case en cours de
-			// traitement
-			int indicePremiereImage=0x7f020010;
+			int noImage = 0; // numero de l'image a affecter a la case en cours de traitement
+			int indicePremiereImage=R.drawable.zl;
 			
-			// selection de l'image a afficher
+			// on teste l'instance de la case
 			if (caseATraiter instanceof L)
 				{
 					noImage = indicePremiereImage ;
@@ -324,7 +330,6 @@ public class Jeu extends Activity {
 				{
 					noImage = indicePremiereImage + 4;
 				}
-			
 			
 			// affichage de l'image
 			imageCourante.setImageDrawable(getResources().getDrawable(noImage));
@@ -352,12 +357,11 @@ public class Jeu extends Activity {
 		}
 		else
 		{
-			imageCourante.setImageDrawable(getResources().getDrawable(0x7f020005));
+			imageCourante.setImageDrawable(getResources().getDrawable(R.drawable.fondplateau));	//affichage du fond si aucune image
 		}
 	}
 	
-	public void afficheICTCaseListe(Case caseATraiter, ImageView imageCourante,
-			int duration, int dimensionCase) {
+	public void afficheICTCaseListe(Case caseATraiter, ImageView imageCourante, int duration, int dimensionCase) {
 			
 				if(!caseATraiter.isUtilise())
 				{
@@ -418,6 +422,7 @@ public class Jeu extends Activity {
 				}
 		}
 	
+	//initialisation des rotations
 	public void initRotation(int tailleImage, int duree) {
 		// rotation 0� / 360�
 		int centre = tailleImage / 2;
@@ -441,77 +446,78 @@ public class Jeu extends Activity {
 		rotation270.setFillAfter(true);
 	}
 	
+	//traitement de l'action sur le bouton valider
 	public void valider(){
-		Objectif objectifCourant=maPartie.getObjectifCourant();
-		Plateau monPlateau=maPartie.getMonPlateau();
-		boolean plateauRempli, condition;
-		Point origine,objectif;
-		origine=null;
-		objectif=null;
-		plateauRempli = true;
-		condition=true;
-			
-		if(!testCheminCorrect())
+		Objectif objectifCourant=maPartie.getObjectifCourant();	//recuperation de l'objectif courant
+		Plateau monPlateau=maPartie.getMonPlateau();	//recuperation du plateau de la partie
+		Point origine=null,objectif=null;
+
+		//test pour savoir si le plateau est totalement rempli
+		for (int ligne = 0; ligne < 5; ligne++) {
+			for (int colonne = 0; colonne < 5; colonne++) {
+				if(monPlateau.getCase(ligne, colonne)==null)
+				{
+					notif("Le plateau doit être totalement rempli");
+					return;
+				}
+			}
+		}
+		
+		//test pour savoir si avec le mode "adulte", tous les chemins sont corrects
+		if(!testCheminCorrect() && maPartie.getDifficulte().equals("adulte"))
 		{
-			notif("Veuillez faire des chemins correts");
+			notif("Vous avez choisi le mode 'Adulte'," +
+					"veuillez faire des chemins correts");
 			return;
 		}
 		
+		//verification que chaque couple de l'objectif sont possibles
 		for(int i=0;i<objectifCourant.getListeCouple().size();i++)
 		{
-			Couple coupleATraiter=objectifCourant.getListeCouple().get(i);
-			origine=coupleATraiter.getOrigine();
-			objectif=coupleATraiter.getObjectif();		
+			Couple coupleATraiter=objectifCourant.getListeCouple().get(i);	//recuperation du couple a traiter
+			origine=coupleATraiter.getOrigine();		//recuperation de l'origine du couple a traiter
+			objectif=coupleATraiter.getObjectif();		//recuperation de l'objectif du couple a traiter
 		
-			for (ligne = 0; ligne < 5; ligne++) {
-				for (colonne = 0; colonne < 5; colonne++) {
-					
-					if(monPlateau.getCase(ligne, colonne)==null)
-					{
-						plateauRempli=false;
-						notif("Le plateau doit être totalement rempli");
-						return;
-					}
-					monPlateau.getCase(ligne, colonne).setFlag(0);
-					monPlateau.getCase(ligne, colonne).setEntree(0);
-					monPlateau.getCase(ligne, colonne).setSortie(0);
-				}
-			}
+			testDesObjectifs(origine);	//fonction testant la possibilité d'atteindre l'ojectif depuis l'origine
 			
-			if(plateauRempli)
-			{
-				fonction(origine.getLigne(),origine.getColonne(),monPlateau);
-			}
-		
-			
+			//si cela n'est pas possible, on sort de la fonction
 			if((coupleATraiter.getaRealiser()==true && monPlateau.getCase(objectif.getLigne(), objectif.getColonne()).getFlag()==0)
 				|| (coupleATraiter.getaRealiser()==false && monPlateau.getCase(objectif.getLigne(), objectif.getColonne()).getFlag()==1))
 			{
-				condition=false;
+				notif("Votre configuration ne permet pas de valider l'objectif");
+				return;
 			}
 		}
-			if(condition==true)
-			{
-				notif("Bravo, vous avez réussi ce niveau !");
-				textObjectif.setText("Gagne");
-				maPartie.objectifSvt();
-				MAJobjectif();
-				maPartie.init();
-				afficheListeCases(0);
-				affichePlateau(0);
-			}
-			else
-			{
-				notif("Votre configuration ne permet pas de valider l'objectif");
-			}
+		notif("BRAVO, vous avez réussi ce niveau !");	
+		maPartie.objectifSvt();	//modification de l'objectif
+		MAJobjectif();	//mise a jour de l'affichage de l'objectif
+		maPartie.init();	//remise a zero de plateau
+		afficheListeCases(0);	//mise a jour de l'affichage des cartes restantes
+		affichePlateau();	//mise a jour de l'affichage du plateau 
+
 	}
 	
+	//application d'une fonction permettant la validation de l'objectif
+	public void testDesObjectifs(Point origine)
+	{
+		Plateau monPlateau=maPartie.getMonPlateau(); //recuperation du plateau de la partie
+		for (int ligne = 0; ligne < 5; ligne++) {
+			for (int colonne = 0; colonne < 5; colonne++) {
+				monPlateau.getCase(ligne, colonne).setFlag(0);
+				monPlateau.getCase(ligne, colonne).setEntree(0);
+				monPlateau.getCase(ligne, colonne).setSortie(0);
+			}
+		}
+		fonction(origine.getLigne(),origine.getColonne(),monPlateau);
+	}
+	
+	//fonction testant si les chemins sont corrects
 	public boolean testCheminCorrect(){
 		Plateau monPlateau=maPartie.getMonPlateau();
 		Case caseEnTest=null;
 		boolean condition=true;
-		for (ligne = 1; ligne < 4; ligne++) {
-			for (colonne = 1; colonne < 4; colonne++) {
+		for (int ligne = 1; ligne < 4; ligne++) {
+			for (int colonne = 1; colonne < 4; colonne++) {
 				caseEnTest=maPartie.getMonPlateau().getCase(ligne, colonne);
 				if(caseEnTest!=null)
 				{
@@ -558,6 +564,7 @@ public class Jeu extends Activity {
 		return true;
 	}
 	
+	//fonction recursive permettant de savoir toutes les cases accessibles depuis une case
 	public void fonction(int ligne, int colonne, Plateau monPlateau) {
 		//System.out.println("debut fonction");
 		Case maCase = monPlateau.getCase(ligne, colonne); // recupere la case à
@@ -753,12 +760,14 @@ public class Jeu extends Activity {
 		System.out.println("fin fonction"+ligne+colonne);
 	}
     
+	//suppression des barres android
 	public void setFullscreen() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	}
     
+	//methode pour les notications
 	public void notif(CharSequence text) {
 		Context context = getApplicationContext();
 		Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
